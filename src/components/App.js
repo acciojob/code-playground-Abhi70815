@@ -1,49 +1,38 @@
-
-import React,{useState} from "react";
-import './../styles/App.css';
-import { BrowserRouter, Link, Navigate, Route, Routes } from "react-router-dom";
+import React, { useEffect, useState } from 'react'
+import { Link, Route, Routes } from 'react-router-dom';
+import Login from './Login';
+import PlayGround from './PlayGround'
+import Error from './Error';
 
 
 const App = () => {
-  const [authenticated, setAuthenticated]= useState(false);
-  const handleLogin=()=>{
-    setAuthenticated(!authenticated);
-  }
+    const [message, setMessage]=useState('you are not authenticated, Please login first');
+    const [islogin, setLogin]= useState(false);
+    const [path, setPath]= useState('/login');
+    const [btn, setbtn]=useState('Log In');
+    useEffect(()=>{
+        if(islogin){
+            setPath('/playground');
+        }
+        else{
+            setPath('/login');
+        }
+    },[islogin]);
+    console.log(islogin)
+
   return (
-    <BrowserRouter>
-        <div className="main-container">
-          <ul>
-            {authenticated ? "logged in, Now you can enter PlayGround": "you are not authenticated, Please login first"}
-
-            <li>
-              <Link to="/playground">PlayGround</Link>
-            </li>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-          </ul>
-
-          <button onClick={handleLogin}>
-            {authenticated ? "Log Out" : "Log In"}
-          </button>
-
-          <Routes>
-            <Route path="/" element={authenticated?(<Navigate to="/playground"/>):(<Navigate to="/login"/>)}/>
-
-            <Route path="/login" element={
-              authenticated ? (<Navigate to="/playground"/>):(
-                <div>
-                  <p>Login</p>
-                </div>
-              )
-            }/>
-          <Route path="/playground" 
-          element={authenticated ? <div>Hi Welcome to Code PlayGround</div>:<Navigate to="/login"/>}
-          />
-          </Routes>
-        </div>
-              
-       </BrowserRouter>
+    <div className='main-container'>
+ <p>{message}</p>
+ <ul>
+    <li><Link to={path}>PlayGround</Link></li>
+    <li><Link to="/login">Login</Link></li>
+ </ul>
+ <Routes>
+    <Route path='/login' element={<Login btn={btn} setbtn={setbtn} islogin={islogin} setLogin={setLogin} message={setMessage}/>}>Login</Route>
+    <Route path='/playground' element={<PlayGround/>} >PlayGround</Route>
+    <Route path='*' element={<Error/>}>NotFound</Route>
+ </Routes>
+    </div>
   )
 }
 
